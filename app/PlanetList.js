@@ -6,21 +6,29 @@ export default class PlanetList extends React.Component {
         this.state = {
             planets: []
         };
+        this.fetchPlanets = this.fetchPlanets.bind(this);
+    }
+
+    fetchPlanets(url){
+        console.log('==fetchPlanets: ' + url);
+        fetch(url)
+        .then((response) => {
+            return response.json();
+        })
+        .then((rawJson) => {
+            const planets = rawJson.results;
+            const currentPlanets = this.state.planets;
+            const nextPlanets = currentPlanets.concat(planets);
+            this.setState({ planets: nextPlanets });
+            if(rawJson.next){
+                this.fetchPlanets(rawJson.next);
+            }
+        });
     }
 
     componentDidMount() {
-        fetch('https://swapi.co/api/planets/?format=json')
-            .then((response) => {
-                console.log(response);
-                return response.json();
-            })
-            .then((myJson) => {
-                const rawJson = myJson;
-                const planets = rawJson.results;
-                this.setState({ planets: planets })
-                console.log(planets);
-            });
-
+        const url = 'https://swapi.co/api/planets/?format=json';
+        this.fetchPlanets(url);
     }
 
     render() {
