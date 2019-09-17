@@ -3,21 +3,30 @@ import React from 'react';
 export default class PlanetList extends React.Component {
     constructor() {
         super();
-        const planetNames = [
-            'Alderaan',
-            'Yavin IV',
-            'Hoth'
-        ];
-        this.state = { planetNames: planetNames };
-        console.log('constructor');
+        this.state = {
+            planets: []
+        };
+    }
+
+    componentDidMount() {
+        fetch('https://swapi.co/api/planets/?format=json')
+            .then((response) => {
+                console.log(response);
+                return response.json();
+            })
+            .then((myJson) => {
+                const rawJson = myJson;
+                const planets = rawJson.results;
+                this.setState({ planets: planets })
+                console.log(planets);
+            });
+
     }
 
     render() {
-        console.log('render');
-        const planetList = this.state.planetNames.map((name) => {
-            return <li key={name}><a href='#'>{name}</a></li>;
+        const planetList = this.state.planets.map((planet) => {
+            return <li key={planet.name}><a href='#'>{planet.name}</a></li>;
         });
-        console.log(planetList);
         return (
             <React.Fragment>
                 <ul>
